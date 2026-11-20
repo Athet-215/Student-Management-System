@@ -86,36 +86,32 @@ class SchoolPayment(models.Model):
                 )
 
     def action_confirm(self):
-        for rec in self:
-
-            if rec.state != 'draft':
+        for record in self:
+            if record.state != 'draft':
                 raise UserError(
                     _('Only draft payments can be confirmed.')
                 )
 
-            if not rec.enrollment_id:
+            if not record.enrollment_id:
                 raise UserError(_('Please select an enrollment.'))
 
-            if rec.amount <= 0:
+            if record.amount <= 0:
                 raise UserError(
                     _('Payment amount must be greater than zero.')
                 )
 
-            enrollment = rec.enrollment_id
-            currency = rec.currency_id
+            enrollment = record.enrollment_id
+            currency = record.currency_id
 
             existing_payments = self.search([
                 ('enrollment_id', '=', enrollment.id),
                 ('state', '=', 'confirmed'),
-                ('id', '!=', rec.id)
+                ('id', '!=', record.id)
             ])
 
             payment_count = len(existing_payments)
 
-            paid_amount = sum(
-                existing_payments.mapped('amount')
-            )
-
+            paid_amount = sum(existing_payments.mapped('amount'))
             remaining_amount = enrollment.fee - paid_amount
 
             if payment_count >= 2:
@@ -133,17 +129,17 @@ class SchoolPayment(models.Model):
                 )
 
             if float_compare(
-                rec.amount,
+                record.amount,
                 remaining_amount,
                 precision_rounding=currency.rounding
             ) > 0:
                 raise UserError(
-                    _('Payment amount cannot exceed the remaining amount. '
-                    'Remaining amount is %s.') % remaining_amount
+                    _('Payment amount cannot exceed the remaining amount. Remaining amount is %s.')
+                    % remaining_amount
                 )
 
             if payment_count == 1 and float_compare(
-                rec.amount,
+                record.amount,
                 remaining_amount,
                 precision_rounding=currency.rounding
             ) != 0:
@@ -152,9 +148,15 @@ class SchoolPayment(models.Model):
                     % remaining_amount
                 )
 
-            rec.write({'state': 'confirmed'})
+            record.write({'state': 'confirmed'})
 
-        return True
+        return {
+            'effect': {
+                'fadeout': 'slow',
+                'message': _('Payment Completed Successfully!'),
+                'type': 'rainbow_man',
+            }
+        }
 
     def action_cancel(self):
         for rec in self:
@@ -209,14 +211,4 @@ class SchoolPayment(models.Model):
         "You cannot delete this payment record."
     ))
         
-    def action_confirm(self):
-        for record in self:
-            record.state = 'confirmed'
-
-        return {
-            'effect': {
-                'fadeout': 'slow',
-                'message': 'Payment Completed Successfully!',
-                'type': 'rainbow_man',
-            }
-        }
+    
