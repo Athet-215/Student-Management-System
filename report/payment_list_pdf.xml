@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- A4 Landscape (column ၈ ခုပါလို) -->
+    <record id="paperformat_payment_list_landscape" model="report.paperformat">
+        <field name="name">Payment List Landscape</field>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">35</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_spacing">30</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_payment_list_pdf" model="ir.actions.report">
+        <field name="name">Payment List PDF</field>
+        <field name="model">school.payment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">student_management.report_payment_list_pdf</field>
+        <field name="report_file">student_management.report_payment_list_pdf</field>
+        <field name="paperformat_id" ref="paperformat_payment_list_landscape"/>
+        <field name="print_report_name">'Payment Report'</field>
+    </record>
+
+    <template id="report_payment_list_pdf">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+
+                    <h3 class="text-center">Payment Report</h3>
+                    <p style="font-size: 12px;">
+                        <strong>Date:</strong>
+                        <span t-esc="date_from"/> ~ <span t-esc="date_to"/>
+                        &amp;nbsp;|&amp;nbsp;
+                        <strong>Method:</strong> <span t-esc="method"/>
+                        &amp;nbsp;|&amp;nbsp;
+                        <strong>Status:</strong> <span t-esc="state"/>
+                    </p>
+
+                    <table class="table table-sm table-bordered"
+                           style="font-size: 12px;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Reference</th>
+                                <th>Student ID</th>
+                                <th>Student</th>
+                                <th>Enrollment</th>
+                                <th>Payment Date</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                                <th class="text-right">Amount (MMK)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="rows" t-as="r">
+                                <tr>
+                                    <td><t t-esc="r_index + 1"/></td>
+                                    <td><t t-esc="r['reference']"/></td>
+                                    <td><t t-esc="r['student_code']"/></td>
+                                    <td><t t-esc="r['student']"/></td>
+                                    <td><t t-esc="r['enrollment']"/></td>
+                                    <td><t t-esc="r['date']"/></td>
+                                    <td><t t-esc="r['method']"/></td>
+                                    <td><t t-esc="r['state']"/></td>
+                                    <td class="text-right">
+                                        <t t-esc="r['amount']"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="8" class="text-right">
+                                    <strong>Total (<t t-esc="count"/> payments)</strong>
+                                </td>
+                                <td class="text-right">
+                                    <strong><t t-esc="total"/></strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="8" class="text-right">
+                                <strong>Confirmed Total</strong>
+                                </td>
+                                <td class="text-right">
+                                    <strong><t t-esc="confirmed_total"/></strong>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_payment_report_wizard_form" model="ir.ui.view">
+        <field name="name">school.payment.report.wizard.form</field>
+        <field name="model">school.payment.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Payment Excel Report">
+                
+                    <group col="4">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="payment_method" colspan="4"/>
+                        <field name="state" colspan="4"/>
+                    </group>
+               
+                <footer>
+                    <button name="action_print_xlsx" type="object" string="Export Excel" class="btn-primary"/>
+                    <button name="action_print_pdf" type="object" string="Export PDF" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_payment_report_wizard" model="ir.actions.act_window">
+        <field name="name">Payment Excel Report</field>
+        <field name="res_model">school.payment.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_payment_report_wizard" name="Payment Excel Report" parent="menu_student_management_root" action="action_payment_report_wizard" sequence="90" groups="student_management.group_student_management_admin,student_management.group_student_management_accountant"/>
+</odoo>
